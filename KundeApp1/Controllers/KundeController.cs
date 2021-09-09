@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using KundeApp1.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,24 +10,84 @@ namespace KundeApp1.Controllers
     [Route("[controller]/[action]")]
     public class KundeController : ControllerBase
     {
+        private readonly KundeDB _kundeDB;
+
+        public KundeController(KundeDB kundeDb)
+        {
+            _kundeDB = kundeDb;
+        }
+
+        public async Task<bool> Lagre(Kunde innKunde)
+        {
+            try
+            {
+                _kundeDB.Kunder.Add(innKunde);
+                _kundeDB.SaveChanges();
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
         public List<Kunde> HentAlle()
         {
-            var kundene = new List<Kunde>();
-
-            var kunde1 = new Kunde();
-            kunde1.navn = "Kristian Bakke";
-            kunde1.adresse = "Bjornveien 12";
-
-            var kunde2 = new Kunde
+            try
             {
-                navn = "Seline Hansen",
-                adresse = "Nyjordet 31"
-            };
+                List<Kunde> alleKundene = _kundeDB.Kunder.ToList();
+                return alleKundene;
+            }
+            catch
+            {
+                return null;
+            } 
+        }
 
-            kundene.Add(kunde1);
-            kundene.Add(kunde2);
+        public bool Slett(int id)
+        {
+            try
+            {
+                Kunde enKunde = _kundeDB.Kunder.Find(id);
+                _kundeDB.Kunder.Remove(enKunde);
+                _kundeDB.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
-            return kundene;
+        public Kunde HentEn(int id)
+        {
+            try
+            {
+                Kunde enKunde = _kundeDB.Kunder.Find(id);
+                return enKunde;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public bool Endre(Kunde endreKunde)
+        {
+            try
+            {
+                Kunde enKunde = _kundeDB.Kunder.Find(endreKunde.id);
+                enKunde.navn = endreKunde.navn;
+                enKunde.adresse = endreKunde.adresse;
+                _kundeDB.SaveChanges();
+                return true;
+            }
+            catch 
+            {
+                return false;
+            }
         }
     }
 }

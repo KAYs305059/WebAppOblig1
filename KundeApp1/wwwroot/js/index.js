@@ -17,8 +17,23 @@ function formaterKunder(kunder) {
         ut += "<tr>" +
             "<td>" + kunde.navn + "</td>" +
             "<td>" + kunde.adresse + "</td>" +
-         "</tr>";
+            "<td> <a class='btn btn-primary' href='endre.html?id=" + kunde.id + "'>Endre</a></td>" +
+            "<td> <button class='btn btn-danger' onclick='slettKunde(" + kunde.id + ")'>Slett</button></td>" +
+            "</tr>";
     }
     ut += "</table>";
     $("#kundene").html(ut);
 }
+
+function slettKunde(id) {
+    const url = "Kunde/Slett?id=" + id;
+    $.get(url, function (OK) {
+        if (OK) {
+            window.location.href = 'index.html';
+        }
+        else {
+            $("#feil").html("Feil i db - prøv igjen senere");
+        }
+
+    });
+};
